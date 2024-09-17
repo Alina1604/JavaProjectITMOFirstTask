@@ -8,7 +8,12 @@ import java.io.FileInputStream;
 
 public class Main {
     public static void main(String[] args) throws IOException {
-        String filePath = "D:\\Projects\\ProjectsJava\\JavaProjectITMOFirstTask\\src\\main\\resources\\Employee.xlsx";
+        if (args.length == 0) {
+            System.out.println("Пожалуйста, укажите путь к файлу в аргументах");
+            return;
+        }
+
+        String filePath = args[0];
 
         List<Individual> individuals = new ArrayList<>();
         List<Company> companies = new ArrayList<>();
@@ -22,55 +27,52 @@ public class Main {
 
         for (int i = 2; i < 12; i++) {
             Row row = sheet.getRow(i);
-
+            var employee = new Employee();
             // Получаем first name
             Cell cellInSearchColumn = row.getCell(5);
             String cellValue = dataFormatter.formatCellValue(cellInSearchColumn, formulaEvaluator);
             if (cellValue != null && !cellValue.isEmpty()) {
                 var individual = new Individual();
-                individual.FirstName = cellValue;
+                individual.setFirstName(cellValue);
 
                 cellInSearchColumn = row.getCell(6);
                 cellValue = dataFormatter.formatCellValue(cellInSearchColumn, formulaEvaluator);
-                individual.LastName = cellValue;
+                individual.setLastName(cellValue);
 
                 cellInSearchColumn = row.getCell(7);
                 cellValue = dataFormatter.formatCellValue(cellInSearchColumn, formulaEvaluator);
-                individual.HasChildren = Boolean.parseBoolean(cellValue);
+                individual.setHasChildren(Boolean.parseBoolean(cellValue));
 
                 cellInSearchColumn = row.getCell(8);
                 cellValue = dataFormatter.formatCellValue(cellInSearchColumn, formulaEvaluator);
-                individual.Age = Integer.parseInt(cellValue);
+                individual.setAge(Integer.parseInt(cellValue));
 
                 GetEmployeeFields(row, dataFormatter, formulaEvaluator, individual);
 
-                var bankAccount = getBankAccount(row, dataFormatter, formulaEvaluator);
-                bankAccounts.add(bankAccount);
-                individual.BankAccount = bankAccount;
-
                 individuals.add(individual);
-                employies.add(individual);
+                employee = individual;
             }
 
             cellInSearchColumn = row.getCell(10);
             cellValue = dataFormatter.formatCellValue(cellInSearchColumn, formulaEvaluator);
             if (cellValue != null && !cellValue.isEmpty()) {
                 var company = new Company();
-                company.CompanyName = cellValue;
+                company.setCompanyName(cellValue);
 
                 cellInSearchColumn = row.getCell(11);
                 cellValue = dataFormatter.formatCellValue(cellInSearchColumn, formulaEvaluator);
-                company.Type = CompanyType.valueOf(cellValue);
+                company.setType(CompanyType.valueOf(cellValue));
 
                 GetEmployeeFields(row, dataFormatter, formulaEvaluator, company);
 
-                var bankAccount = getBankAccount(row, dataFormatter, formulaEvaluator);
-                bankAccounts.add(bankAccount);
-                company.BankAccount = bankAccount;
-
                 companies.add(company);
-                employies.add(company);
+                employee = company;
             }
+
+            var bankAccount = getBankAccount(row, dataFormatter, formulaEvaluator);
+            bankAccounts.add(bankAccount);
+            employee.setBankAccount(bankAccount);
+            employies.add(employee);
         }
 
         System.out.println("Количество физических лиц среди сотрудников: " + individuals.size());
@@ -78,8 +80,8 @@ public class Main {
         System.out.println("Имя и фамилия сотрудников, которым меньше 20 лет: ");
 
         for (Individual individual:individuals) {
-            if (individual.Age < 20) {
-                System.out.print(individual.FirstName + " " + individual.LastName + "\n");
+            if (individual.getAge() < 20) {
+                System.out.print(individual.getFirstName() + " " + individual.getLastName() + "\n");
             }
         }
 
@@ -94,15 +96,15 @@ public class Main {
         var bankAccount = new BankAccount();
         cellInSearchColumn = row.getCell(13);
         cellValue = dataFormatter.formatCellValue(cellInSearchColumn, formulaEvaluator);
-        bankAccount.Iban = cellValue;
+        bankAccount.setIban(cellValue);
 
         cellInSearchColumn = row.getCell(14);
         cellValue = dataFormatter.formatCellValue(cellInSearchColumn, formulaEvaluator);
-        bankAccount.Bic = cellValue;
+        bankAccount.setBic(cellValue);
 
         cellInSearchColumn = row.getCell(14);
         cellValue = dataFormatter.formatCellValue(cellInSearchColumn, formulaEvaluator);
-        bankAccount.AccountHolder = cellValue;
+        bankAccount.setAccountHolder(cellValue);
         return bankAccount;
     }
 
@@ -112,18 +114,18 @@ public class Main {
         Cell cellInSearchColumn;
         cellInSearchColumn = row.getCell(0);
         cellValue = dataFormatter.formatCellValue(cellInSearchColumn, formulaEvaluator);
-        individual.Id = Long.valueOf(cellValue);
+        individual.setId(Long.valueOf(cellValue));
 
         cellInSearchColumn = row.getCell(1);
         cellValue = dataFormatter.formatCellValue(cellInSearchColumn, formulaEvaluator);
-        individual.Email = cellValue;
+        individual.setEmail(cellValue);
 
         cellInSearchColumn = row.getCell(2);
         cellValue = dataFormatter.formatCellValue(cellInSearchColumn, formulaEvaluator);
-        individual.Phone = cellValue;
+        individual.setPhone(cellValue);
 
         cellInSearchColumn = row.getCell(3);
         cellValue = dataFormatter.formatCellValue(cellInSearchColumn, formulaEvaluator);
-        individual.Address = cellValue;
+        individual.setAddress(cellValue);
     }
 }
